@@ -47,6 +47,30 @@ module FakeWeb
     @allow_net_connect
   end
 
+  # call-seq:
+  #   FakeWeb.with_allow_net_connect_set_to(true) do
+  #     # do something that needs allow_net_connect to be true
+  #   end
+  #
+  # or
+  #
+  #   FakeWeb.with_allow_net_connect_set_to(false) do
+  #     # do something that needs allow_net_connect to be false
+  #   end
+  #
+  # Temporarily sets allow_net_connect to the provided value for the duration
+  # of the provided block.  When the block completes, it is reverted to whatever
+  # it was before being this method was called.
+  def self.with_allow_net_connect_set_to(value)
+    original_value = FakeWeb.allow_net_connect?
+    FakeWeb.allow_net_connect = value
+    begin
+      yield
+    ensure
+      FakeWeb.allow_net_connect = original_value
+    end
+  end
+
   # This exception is raised if you set <tt>FakeWeb.allow_net_connect =
   # false</tt> and subsequently try to make a request to a URI you haven't
   # stubbed.
