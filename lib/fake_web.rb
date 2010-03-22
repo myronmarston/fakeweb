@@ -165,6 +165,20 @@ module FakeWeb
     end
   end
 
+  # call-seq:
+  #   FakeWeb.remove_from_registry(method, uri)
+  #
+  # Removes the response for the given method and uri from the registry.
+  # This is would be useful, for example, to remove the registrations for
+  # a particular test if you want to ensure that those registrations won't
+  # "leak" into other tests and effect them.
+  #
+  # Specify a method of <tt>:any</tt> to remove all registrations for
+  # the given uri, regardless of the HTTP method.
+  def self.remove_from_registry(*args)
+    Registry.instance.remove(*args)
+  end
+
   private
 
   def self.print_missing_http_method_deprecation_warning(*args)

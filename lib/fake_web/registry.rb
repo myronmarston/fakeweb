@@ -38,6 +38,14 @@ module FakeWeb
       next_responder.response(&block)
     end
 
+    def remove(method, uri)
+      uri_map.delete_if do |uri_map_uri, method_hash|
+        if normalize_uri(uri_map_uri) == normalize_uri(uri)
+          method_hash.delete(method)
+          method == :any || method_hash.empty?
+        end
+      end
+    end
 
     private
 
