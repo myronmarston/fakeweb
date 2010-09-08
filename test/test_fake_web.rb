@@ -252,6 +252,18 @@ class TestFakeWeb < Test::Unit::TestCase
     assert_equal "content", body
   end
 
+  def test_returns_net_read_adapter_from_response_body_for_real_request_with_block_and_read_body
+    FakeWeb.allow_net_connect = true
+    response = Net::HTTP.new('example.com', 80).request_get('/') { |r| r.read_body { } }
+    assert_equal Net::ReadAdapter, response.body.class
+  end
+
+  def test_returns_net_read_adapter_from_response_body_for_stubbed_request_with_block_and_read_body
+    FakeWeb.register_uri(:get, 'http://example.com/', :body => 'content')
+    response = Net::HTTP.new('example.com', 80).request_get('/') { |r| r.read_body { } }
+    assert_equal Net::ReadAdapter, response.body.class
+  end
+
   def test_mock_request_with_undocumented_full_uri_argument_style
     FakeWeb.register_uri(:get, 'http://mock/test_example.txt', :body => fixture_path("test_example.txt"))
     response = Net::HTTP.start('mock') { |query| query.get('http://mock/test_example.txt') }
